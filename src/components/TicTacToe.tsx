@@ -104,10 +104,6 @@ const TicTacToe: React.FC = () => {
         if (!lastSquare) return;
 
         const rect = lastSquare.getBoundingClientRect();
-        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-        // Calculate the center position of the last winning square
         const x = rect.left + (rect.width / 2);
         const y = rect.top + (rect.height / 2);
 

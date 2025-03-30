@@ -9,7 +9,7 @@ const Connect4: React.FC = () => {
   const [board, setBoard] = useState<Board>(Array(6).fill(null).map(() => Array(7).fill(null)));
   const [xIsNext, setXIsNext] = useState(true);
   const [winner, setWinner] = useState<Player | null>(null);
-  const [windowSize, setWindowSize] = useState({
+  const [windowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });

@@ -502,11 +502,12 @@ const TicTacToe3D: React.FC = () => {
       }
     };
 
-    mountRef.current.addEventListener('mousemove', handleMouseMove);
+    const mountElement = mountRef.current;
+    mountElement.addEventListener('mousemove', handleMouseMove);
     return () => {
-      mountRef.current?.removeEventListener('mousemove', handleMouseMove);
+      mountElement.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [sceneRef.current, cameraRef.current, rendererRef.current, controlsRef.current]);
+  }, []); // Empty dependency array since we're using refs
 
   useEffect(() => {
     if (!sceneRef.current) return;
@@ -527,7 +528,7 @@ const TicTacToe3D: React.FC = () => {
         }
       }
     });
-  }, [hoveredCube, sceneRef.current]);
+  }, [hoveredCube]); // Only depend on hoveredCube
 
   return (
     <div className="App">

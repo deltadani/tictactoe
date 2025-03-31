@@ -20,7 +20,7 @@ function App() {
       default:
         return (
           <div className="game-selector">
-            <h1>Select a Game</h1>
+            <h1>Happy TicTacToe!</h1>
             <div className="game-buttons">
               <button onClick={() => setSelectedGame('2d')}>
                 2D Tic Tac Toe

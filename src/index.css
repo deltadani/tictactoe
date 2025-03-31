@@ -15,8 +15,20 @@ body {
 
 h1 {
   color: #61dafb;
-  margin-bottom: 20px;
+  margin: 0 auto;
   font-size: 3rem;
+  text-shadow: 0 0 10px rgba(97, 218, 251, 0.3);
+  text-align: center;
+  width: 100%; /* Ensure the title spans the full width */
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: static !important; /* Force reset of position */
+  top: unset !important; /* Force reset of top */
+  left: unset !important; /* Force reset of left */
+  right: unset !important; /* Force reset of right */
+  transform: none !important; /* Force reset of transform */
 }
 
 code {

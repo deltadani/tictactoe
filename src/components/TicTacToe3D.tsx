@@ -208,13 +208,14 @@ const TicTacToe3D: React.FC = () => {
     // Set up camera
     const camera = new THREE.PerspectiveCamera(
       75,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      mountRef.current.clientWidth / mountRef.current.clientHeight || 1, // Fallback to 1 if dimensions are 0
       0.1,
       1000
     );
     cameraRef.current = camera;
-    camera.position.set(5, 5, 5);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(5, 5, 5); // Ensure the camera is positioned to see the cube
+    camera.lookAt(0, 0, 0); // Look at the center of the scene
+    console.log('Camera position:', camera.position);
 
     // Set up renderer
     const renderer = new THREE.WebGLRenderer({ 
@@ -222,6 +223,21 @@ const TicTacToe3D: React.FC = () => {
       canvas: mountRef.current
     });
     rendererRef.current = renderer;
+
+    // Ensure the canvas has proper dimensions
+    const resizeCanvas = () => {
+      const parent = mountRef.current?.parentElement;
+      const width = parent?.clientWidth || window.innerWidth;
+      const height = parent?.clientHeight || window.innerHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      console.log('Canvas resized to:', width, height);
+    };
+
+    resizeCanvas(); // Initial resize
+    window.addEventListener('resize', resizeCanvas);
+
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     renderer.shadowMap.enabled = true;
     renderer.setClearColor(0x1a1d23, 1);
@@ -234,10 +250,6 @@ const TicTacToe3D: React.FC = () => {
     controls.minDistance = 3;
     controls.maxDistance = 10;
     controls.target.set(0, 0, 0);
-    controls.enablePan = false;
-    controls.enableRotate = true;
-    controls.enableZoom = true;
-    controls.zoomSpeed = 1.0;
     controls.update();
 
     // Set up raycaster and mouse
@@ -271,6 +283,7 @@ const TicTacToe3D: React.FC = () => {
           cell.userData = { x, y, z };
           scene.add(cell);
           cells[x][y][z] = cell;
+          console.log(`Added cell at position: (${cell.position.x}, ${cell.position.y}, ${cell.position.z})`);
         }
       }
     }
@@ -278,11 +291,13 @@ const TicTacToe3D: React.FC = () => {
     // Add lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
+    console.log('Added ambient light.');
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 5, 5);
     directionalLight.castShadow = true;
     scene.add(directionalLight);
+    console.log('Added directional light at position:', directionalLight.position);
 
     // Handle window resize
     const handleResize = () => {
@@ -304,6 +319,7 @@ const TicTacToe3D: React.FC = () => {
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', resizeCanvas);
       renderer.dispose();
     };
   }, []); // Empty dependency array - scene setup runs only once
@@ -561,4 +577,4 @@ const TicTacToe3D: React.FC = () => {
   );
 };
 
-export default TicTacToe3D; 
+export default TicTacToe3D;

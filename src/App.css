@@ -1,9 +1,13 @@
 .App {
   text-align: center;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: #282c34;
   color: white;
   padding: 20px;
+  position: relative;
   overflow-y: auto;
 }
 
@@ -53,8 +57,11 @@
 
 .game-selector h1 {
   font-size: 48px;
-  margin-bottom: 40px;
+  margin: 0 auto 40px;
   color: #61dafb;
+  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .game-buttons {
@@ -104,9 +111,22 @@
 }
 
 h1 {
-  margin: 20px 0;
   color: #61dafb;
-  font-size: 36px;
+  margin: 0;
+  font-size: 3rem;
+  text-shadow: 0 0 10px rgba(97, 218, 251, 0.3);
+  text-align: center;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #282c34;
+  padding: 20px 0;
+  box-sizing: border-box;
+  display: block;
+  text-align: center;
 }
 
 .game-info {

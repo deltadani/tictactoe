@@ -204,17 +204,19 @@ const TicTacToe: React.FC = () => {
       <div className="game-info">
         <div className={winner ? 'winner' : ''}>{status}</div>
       </div>
-      <div className="game-board">
-        {squares.map((square, i) => (
-          <Square
-            key={i}
-            value={square}
-            onClick={() => handleClick(i)}
-            disabled={!!square || !!winner}
-            isWinningSquare={line?.includes(i)}
-            isLastWinningSquare={line ? i === line[2] : false}
-          />
-        ))}
+      <div className="game-container">
+        <div className="game-board">
+          {squares.map((square, i) => (
+            <Square
+              key={i}
+              value={square}
+              onClick={() => handleClick(i)}
+              disabled={!!square || !!winner}
+              isWinningSquare={line?.includes(i)}
+              isLastWinningSquare={line ? i === line[2] : false}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

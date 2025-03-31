@@ -12,18 +12,9 @@
   overflow-y: auto;
 }
 
-h1 {
-  color: #61dafb;
-  margin: 0;
-  font-size: 3rem;
-  text-shadow: 0 0 10px rgba(97, 218, 251, 0.3);
-  text-align: center;
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-}
+/* Remove the specific h1 styles for the 2D game */
+
+/* Remove any conflicting h1 styles specific to the 2D game */
 
 .game-board {
   display: grid;
@@ -84,4 +75,28 @@ h1 {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
   }
-} 
+}
+
+.back-button {
+  position: fixed;
+  top: 50%; /* Center vertically */
+  left: 20px; /* Align it to the left */
+  transform: translateY(-50%); /* Adjust for vertical centering */
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #61dafb;
+  border: none;
+  border-radius: 5px;
+  color: #282c34;
+  cursor: pointer;
+  transition: background 0.2s, scale 0.2s; /* Smooth transition for hover effects */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 1000; /* Ensure it stays above other elements */
+}
+
+.back-button:hover {
+  background: #4fa8c7; /* Change background color on hover */
+  scale: 1.05; /* Slightly scale the button */
+}

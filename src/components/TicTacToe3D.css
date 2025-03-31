@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   min-height: 100vh;
+  min-width: 100vw; /* Ensure the parent container has a width */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,40 +10,43 @@
   padding: 20px;
   position: relative;
   overflow-y: auto;
-  padding-top: 120px;
-  height: 100vh;
+  box-sizing: border-box;
+}
+
+.game-container {
+  margin-top: 120px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
   color: #61dafb;
-  margin: 0;
+  margin: 0 auto;
   font-size: 3rem;
   text-shadow: 0 0 10px rgba(97, 218, 251, 0.3);
   text-align: center;
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Ensure the title spans the full width */
+  box-sizing: border-box;
 }
 
 .game-board-3d {
-  width: 100%;
-  max-width: 800px;
-  height: 60vh;
+  width: 100%; /* Ensure it takes the full width of its parent */
+  height: 600px;
+  max-width: 800px; /* Optional: Limit the maximum width */
   margin: 20px auto;
   background: #1a1d23;
   border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   position: relative;
-  min-height: 500px;
-  overflow: hidden;
-  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1;
+  box-sizing: border-box; /* Ensure padding and borders are included in width/height */
 }
 
 .game-board-3d canvas {
@@ -53,7 +57,6 @@ h1 {
   top: 0;
   left: 0;
   z-index: 2;
-  cursor: move;
   background: #1a1d23;
   min-height: 500px;
 }
@@ -239,8 +242,9 @@ h1 {
 
 .back-button {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 50%; /* Center vertically */
+  left: 20px; /* Align it to the left */
+  transform: translateY(-50%); /* Adjust for vertical centering */
   padding: 10px 20px;
   font-size: 1rem;
   background: #61dafb;
@@ -248,14 +252,14 @@ h1 {
   border-radius: 5px;
   color: #282c34;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, scale 0.2s; /* Smooth transition for hover effects */
   display: flex;
   align-items: center;
   gap: 5px;
-  z-index: 1000;
+  z-index: 1000; /* Ensure it stays above other elements */
 }
 
 .back-button:hover {
-  background: #4fa8c7;
-  transform: translateX(-2px);
-} 
+  background: #4fa8c7; /* Change background color on hover */
+  scale: 1.05; /* Slightly scale the button */
+}

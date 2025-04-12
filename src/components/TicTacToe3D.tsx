@@ -8,135 +8,59 @@ type SquareValue = 'X' | 'O' | null;
 type CubeValue = SquareValue[][][];
 type CellArray = THREE.Mesh[][][];
 
-const calculateWinner = (cube: CubeValue): { winner: SquareValue; line: number[][] | null } => {
-  // Check rows, columns, and layer diagonals
-  for (let z = 0; z < 3; z++) {
-    // Check rows
-    for (let y = 0; y < 3; y++) {
-      if (cube[0][y][z] && 
-          cube[0][y][z] === cube[1][y][z] && 
-          cube[1][y][z] === cube[2][y][z]) {
-        return { 
-          winner: cube[0][y][z], 
-          line: [[0, y, z], [1, y, z], [2, y, z]] 
-        };
+export const calculateWinner = (cube: CubeValue): { winner: SquareValue; line: number[][] | null } => {
+  const directions = [
+    // Straight lines
+    { dx: 1, dy: 0, dz: 0 }, // X-axis
+    { dx: 0, dy: 1, dz: 0 }, // Y-axis
+    { dx: 0, dy: 0, dz: 1 }, // Z-axis
+
+    // Diagonals within planes
+    { dx: 1, dy: 1, dz: 0 }, // XY-plane
+    { dx: 1, dy: -1, dz: 0 }, // XY-plane (anti-diagonal)
+    { dx: 1, dy: 0, dz: 1 }, // XZ-plane
+    { dx: 0, dy: 1, dz: 1 }, // YZ-plane
+
+    // Diagonals across layers
+    { dx: 1, dy: 1, dz: 1 }, // XYZ diagonal
+    { dx: 1, dy: -1, dz: 1 }, // XYZ anti-diagonal
+  ];
+
+  for (let x = 0; x < 4; x++) {
+    for (let y = 0; y < 4; y++) {
+      for (let z = 0; z < 4; z++) {
+        const currentValue = cube[x][y][z];
+        if (!currentValue) continue; // Skip empty cells
+
+        for (const { dx, dy, dz } of directions) {
+          const line = [[x, y, z]];
+          let isWinningLine = true;
+
+          for (let step = 1; step < 4; step++) {
+            const nx = x + dx * step;
+            const ny = y + dy * step;
+            const nz = z + dz * step;
+
+            // Check bounds and value consistency
+            if (
+              nx < 0 || nx >= 4 ||
+              ny < 0 || ny >= 4 ||
+              nz < 0 || nz >= 4 ||
+              cube[nx][ny][nz] !== currentValue
+            ) {
+              isWinningLine = false;
+              break;
+            }
+
+            line.push([nx, ny, nz]);
+          }
+
+          if (isWinningLine && line.length === 4) { // Ensure the line has exactly 4 cells
+            return { winner: currentValue, line };
+          }
+        }
       }
     }
-    // Check columns
-    for (let x = 0; x < 3; x++) {
-      if (cube[x][0][z] && 
-          cube[x][0][z] === cube[x][1][z] && 
-          cube[x][1][z] === cube[x][2][z]) {
-        return { 
-          winner: cube[x][0][z], 
-          line: [[x, 0, z], [x, 1, z], [x, 2, z]] 
-        };
-      }
-    }
-  }
-
-  // Check diagonals in each layer (z-plane)
-  for (let z = 0; z < 3; z++) {
-    // Main diagonal (top-left to bottom-right)
-    if (cube[0][0][z] && 
-        cube[0][0][z] === cube[1][1][z] && 
-        cube[1][1][z] === cube[2][2][z]) {
-      return { 
-        winner: cube[0][0][z], 
-        line: [[0, 0, z], [1, 1, z], [2, 2, z]] 
-      };
-    }
-    // Other diagonal (top-right to bottom-left)
-    if (cube[2][0][z] && 
-        cube[2][0][z] === cube[1][1][z] && 
-        cube[1][1][z] === cube[0][2][z]) {
-      return { 
-        winner: cube[2][0][z], 
-        line: [[2, 0, z], [1, 1, z], [0, 2, z]] 
-      };
-    }
-  }
-
-  // Check diagonals in each vertical plane (x-plane)
-  for (let x = 0; x < 3; x++) {
-    // Main diagonal
-    if (cube[x][0][0] && 
-        cube[x][0][0] === cube[x][1][1] && 
-        cube[x][1][1] === cube[x][2][2]) {
-      return { 
-        winner: cube[x][0][0], 
-        line: [[x, 0, 0], [x, 1, 1], [x, 2, 2]] 
-      };
-    }
-    // Other diagonal
-    if (cube[x][2][0] && 
-        cube[x][2][0] === cube[x][1][1] && 
-        cube[x][1][1] === cube[x][0][2]) {
-      return { 
-        winner: cube[x][2][0], 
-        line: [[x, 2, 0], [x, 1, 1], [x, 0, 2]] 
-      };
-    }
-  }
-
-  // Check diagonals in each side plane (y-plane)
-  for (let y = 0; y < 3; y++) {
-    // Main diagonal
-    if (cube[0][y][0] && 
-        cube[0][y][0] === cube[1][y][1] && 
-        cube[1][y][1] === cube[2][y][2]) {
-      return { 
-        winner: cube[0][y][0], 
-        line: [[0, y, 0], [1, y, 1], [2, y, 2]] 
-      };
-    }
-    // Other diagonal
-    if (cube[2][y][0] && 
-        cube[2][y][0] === cube[1][y][1] && 
-        cube[1][y][1] === cube[0][y][2]) {
-      return { 
-        winner: cube[2][y][0], 
-        line: [[2, y, 0], [1, y, 1], [0, y, 2]] 
-      };
-    }
-  }
-
-  // Check space diagonals (corner to corner through center)
-  // Front-top-left to back-bottom-right
-  if (cube[0][0][0] && 
-      cube[0][0][0] === cube[1][1][1] && 
-      cube[1][1][1] === cube[2][2][2]) {
-    return { 
-      winner: cube[0][0][0], 
-      line: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] 
-    };
-  }
-  // Front-top-right to back-bottom-left
-  if (cube[2][0][0] && 
-      cube[2][0][0] === cube[1][1][1] && 
-      cube[1][1][1] === cube[0][2][2]) {
-    return { 
-      winner: cube[2][0][0], 
-      line: [[2, 0, 0], [1, 1, 1], [0, 2, 2]] 
-    };
-  }
-  // Back-top-left to front-bottom-right
-  if (cube[0][0][2] && 
-      cube[0][0][2] === cube[1][1][1] && 
-      cube[1][1][1] === cube[2][2][0]) {
-    return { 
-      winner: cube[0][0][2], 
-      line: [[0, 0, 2], [1, 1, 1], [2, 2, 0]] 
-    };
-  }
-  // Back-top-right to front-bottom-left
-  if (cube[2][0][2] && 
-      cube[2][0][2] === cube[1][1][1] && 
-      cube[1][1][1] === cube[0][2][0]) {
-    return { 
-      winner: cube[2][0][2], 
-      line: [[2, 0, 2], [1, 1, 1], [0, 2, 0]] 
-    };
   }
 
   return { winner: null, line: null };
@@ -174,8 +98,8 @@ const createMaterials = () => ({
 });
 
 const TicTacToe3D: React.FC = () => {
-  const [cube, setCube] = useState<CubeValue>(Array(3).fill(null).map(() => 
-    Array(3).fill(null).map(() => Array(3).fill(null))
+  const [cube, setCube] = useState<CubeValue>(Array(4).fill(null).map(() => 
+    Array(4).fill(null).map(() => Array(4).fill(null))
   ));
   const [xIsNext, setXIsNext] = useState(true);
   const [winner, setWinner] = useState<SquareValue>(null);
@@ -202,7 +126,7 @@ const TicTacToe3D: React.FC = () => {
 
     // Initialize Three.js scene
     const scene = new THREE.Scene();
-    sceneRef.current = scene;
+    sceneRef.current = scene; // Assign the scene to sceneRef.current
     scene.background = new THREE.Color(0x1a1d23);
 
     // Set up camera
@@ -260,29 +184,30 @@ const TicTacToe3D: React.FC = () => {
 
     // Create cube geometry
     const cellSize = 1;
-    const gap = 0.1;
+    const xyGap = 0.1; // Smaller gap for cells within each layer
+    const zGap = 1.5; // Larger gap for separation between layers
     const geometry = new THREE.BoxGeometry(cellSize, cellSize, cellSize);
 
     // Create cells
-    const cells: CellArray = Array(3).fill(null).map(() => 
-      Array(3).fill(null).map(() => Array(3).fill(null))
+    const cells: CellArray = Array(4).fill(null).map(() => 
+      Array(4).fill(null).map(() => Array(4).fill(null))
     );
     cellsRef.current = cells;
 
-    for (let x = 0; x < 3; x++) {
-      for (let y = 0; y < 3; y++) {
-        for (let z = 0; z < 3; z++) {
+    for (let x = 0; x < 4; x++) {
+      for (let z = 0; z < 4; z++) { // Switch z and y
+        for (let y = 0; y < 4; y++) { // Switch z and y
           const cell = new THREE.Mesh(geometry, materialsRef.current.default.clone());
           cell.position.set(
-            (x - 1) * (cellSize + gap),
-            (y - 1) * (cellSize + gap),
-            (z - 1) * (cellSize + gap)
+            (x - 1.5) * (cellSize + xyGap), // Smaller gap for x-axis
+            (y - 1.5) * (cellSize + zGap),  // Larger gap for y-axis (was z)
+            (z - 1.5) * (cellSize + xyGap)  // Smaller gap for z-axis (was y)
           );
           cell.castShadow = true;
           cell.receiveShadow = true;
-          cell.userData = { x, y, z };
+          cell.userData = { x, y, z, type: 'cube' }; // Ensure type is set to 'cube'
           scene.add(cell);
-          cells[x][y][z] = cell;
+          cells[x][z][y] = cell; // Update the cell array to match the new axes
           console.log(`Added cell at position: (${cell.position.x}, ${cell.position.y}, ${cell.position.z})`);
         }
       }
@@ -324,6 +249,44 @@ const TicTacToe3D: React.FC = () => {
     };
   }, []); // Empty dependency array - scene setup runs only once
 
+  useEffect(() => {
+    if (!sceneRef.current) return; // Ensure sceneRef.current is initialized
+
+    const scene = sceneRef.current; // Access the scene from sceneRef.current
+    const cellSize = 1;
+    const xyGap = 0.1; // Smaller gap for cells within each layer
+    const zGap = 1.5; // Larger gap for separation between layers
+    const geometry = new THREE.BoxGeometry(cellSize, cellSize, cellSize);
+
+    // Create cells
+    const cells: CellArray = Array(4)
+      .fill(null)
+      .map(() =>
+        Array(4)
+          .fill(null)
+          .map(() => Array(4).fill(null))
+      );
+    cellsRef.current = cells;
+
+    for (let x = 0; x < 4; x++) {
+      for (let z = 0; z < 4; z++) { // Switch z and y
+        for (let y = 0; y < 4; y++) { // Switch z and y
+          const cell = new THREE.Mesh(geometry, materialsRef.current.default.clone());
+          cell.position.set(
+            (x - 1.5) * (cellSize + xyGap), // Smaller gap for x-axis
+            (y - 1.5) * (cellSize + zGap),  // Larger gap for y-axis (was z)
+            (z - 1.5) * (cellSize + xyGap)  // Smaller gap for z-axis (was y)
+          );
+          cell.castShadow = true;
+          cell.receiveShadow = true;
+          cell.userData = { x, y, z }; // Update userData to reflect the new axes
+          scene.add(cell);
+          cells[x][z][y] = cell; // Update the cell array to match the new axes
+        }
+      }
+    }
+  }, []);
+
   // Animation and interaction effect
   useEffect(() => {
     if (!cameraRef.current || !raycasterRef.current || !mouseRef.current || !cellsRef.current || !rendererRef.current || !sceneRef.current || !controlsRef.current) return;
@@ -335,6 +298,8 @@ const TicTacToe3D: React.FC = () => {
     const mouse = mouseRef.current;
     const raycaster = raycasterRef.current;
     const cells = cellsRef.current;
+
+    let lastHoveredCell: THREE.Mesh | null = null; // Track the last hovered cell
 
     // Animation loop
     const animate = () => {
@@ -359,24 +324,19 @@ const TicTacToe3D: React.FC = () => {
 
       if (intersects.length > 0) {
         const cell = intersects[0].object as THREE.Mesh;
-        const { x, y, z } = cell.userData;
+        const { x, y, z, type } = cell.userData;
 
-        if (!cube[x][y][z]) {
+        if (type === 'cube' && !cube[x][y][z]) { // Ensure type is 'cube' and cell is not already played
           // Update game state
           const newCube = cube.map(l => l.map(r => [...r]));
           newCube[x][y][z] = xIsNext ? 'X' : 'O';
           setCube(newCube);
           setXIsNext(!xIsNext);
-          
-          // Update cell material immediately
-          const material = materialsRef.current[xIsNext ? 'x' : 'o'].clone();
-          cell.material = material;
-          
-          // Add a more noticeable scale animation
-          cell.scale.set(1.2, 1.2, 1.2);
-          setTimeout(() => {
-            cell.scale.set(1, 1, 1);
-          }, 300);
+
+          // Apply the correct material for the clicked cell
+          const material = materialsRef.current[xIsNext ? 'x' : 'o'];
+          cell.material = material.clone(); // Clone to avoid shared state issues
+          cell.material.transparent = false; // Ensure no opacity is applied
         }
       }
     };
@@ -392,25 +352,23 @@ const TicTacToe3D: React.FC = () => {
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children);
 
-      // Reset all cells to their original material
-      for (let x = 0; x < 3; x++) {
-        for (let y = 0; y < 3; y++) {
-          for (let z = 0; z < 3; z++) {
-            const cell = cells[x][y][z];
-            if (!cube[x][y][z]) { // Only reset non-played cells
-              cell.material = materialsRef.current.default.clone();
-            }
-          }
-        }
+      // Reset the material of the last hovered cell
+      if (lastHoveredCell && !cube[lastHoveredCell.userData.x][lastHoveredCell.userData.y][lastHoveredCell.userData.z]) {
+        lastHoveredCell.material = materialsRef.current.default.clone();
       }
 
-      // Apply hover material to intersected cell
+      // Apply hover material to the currently intersected cell
       if (intersects.length > 0) {
         const cell = intersects[0].object as THREE.Mesh;
         const { x, y, z } = cell.userData;
         if (!cube[x][y][z]) { // Only apply hover effect to non-played cells
           cell.material = materialsRef.current.hover.clone();
+          lastHoveredCell = cell; // Update the last hovered cell
+        } else {
+          lastHoveredCell = null; // Reset if the cell is already played
         }
+      } else {
+        lastHoveredCell = null; // Reset if no cell is hovered
       }
     };
 
@@ -425,10 +383,26 @@ const TicTacToe3D: React.FC = () => {
 
   // Check for winner effect
   useEffect(() => {
-    const { winner: newWinner } = calculateWinner(cube);
+    const { winner: newWinner, line } = calculateWinner(cube);
     if (newWinner && !winner) {
       setWinner(newWinner);
       playVictorySound();
+
+      // Highlight the winning cells
+      if (line && cellsRef.current) {
+        line.forEach(([x, y, z]) => {
+          const cell = cellsRef.current?.[x]?.[z]?.[y]; // Corrected the coordinate mapping
+          if (cell) {
+            cell.material = new THREE.MeshStandardMaterial({
+              color: 0xffd700, // Gold color for highlighting
+              emissive: 0xffa500, // Subtle glow effect
+              metalness: 0.8,
+              roughness: 0.2,
+            });
+            cell.scale.set(1.4, 1.4, 1.4); // Slightly scale up the winning cells
+          }
+        });
+      }
     }
   }, [cube, winner]);
 
@@ -454,19 +428,22 @@ const TicTacToe3D: React.FC = () => {
   };
 
   const resetGame = () => {
-    setCube(Array(3).fill(null).map(() => 
-      Array(3).fill(null).map(() => Array(3).fill(null))
+    setCube(Array(4).fill(null).map(() => 
+      Array(4).fill(null).map(() => Array(4).fill(null))
     ));
     setXIsNext(true);
     setWinner(null);
 
-    // Reset all cell materials
+    // Reset all cell materials and scales
     if (cellsRef.current) {
-      for (let x = 0; x < 3; x++) {
-        for (let y = 0; y < 3; y++) {
-          for (let z = 0; z < 3; z++) {
-            cellsRef.current[x][y][z].material = materialsRef.current.default.clone();
-            cellsRef.current[x][y][z].scale.set(1, 1, 1);
+      for (let x = 0; x < 4; x++) {
+        for (let y = 0; y < 4; y++) {
+          for (let z = 0; z < 4; z++) {
+            const cell = cellsRef.current?.[x]?.[y]?.[z];
+            if (cell) {
+              cell.material = materialsRef.current.default.clone();
+              cell.scale.set(1, 1, 1); // Reset scale
+            }
           }
         }
       }
@@ -566,7 +543,7 @@ const TicTacToe3D: React.FC = () => {
           initialVelocityY={15}
         />
       )}
-      <h1>3D Tic Tac Toe</h1>
+      <h1>Qubic (4x4x4 Tic Tac Toe)</h1>
       <div className="game-info">
         <div className={winner ? 'winner' : ''}>{status}</div>
       </div>

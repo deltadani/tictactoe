@@ -1,20 +1,14 @@
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  preset: 'ts-jest', // Use ts-jest to handle TypeScript files
+  testEnvironment: 'jsdom', // Simulates a browser environment for React components
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^three/examples/jsm/(.*)$': 'three/examples/jsm/$1'
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy', // Mocks CSS imports
   },
+  setupFilesAfterEnv: ['@testing-library/jest-dom'], // Adds custom matchers for DOM testing
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.json'
-    }]
+    '^.+\\.tsx?$': 'ts-jest', // Transform TypeScript files using ts-jest
   },
-  testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   transformIgnorePatterns: [
-    '/node_modules/(?!three|@babel/runtime)'
+    '<rootDir>/node_modules/(?!three/examples/jsm/)', // Allow transforming three/examples/jsm
   ],
-  moduleDirectories: ['node_modules', 'src']
-}; 
+};

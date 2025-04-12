@@ -1,0 +1,64 @@
+.chess-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #282c34;
+  color: white;
+  font-size: 24px;
+  padding: 20px;
+}
+
+.chess-container h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.chess-container p {
+  font-size: 18px;
+}
+
+.chess-container .reset-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  background: #61dafb;
+  border: none;
+  border-radius: 5px;
+  color: #282c34;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  z-index: 1;
+  display: block; /* Ensure it stays in its own row */
+  text-align: center; /* Center-align text */
+}
+
+.chess-container .reset-button:hover {
+  background: #4fa8c7;
+  transform: none; /* Removed any shifting effect */
+}
+
+.player-indicator.player-x {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white !important; /* Force white for player x */
+  color: black !important; /* Force black pawn icon */
+  text-align: center;
+  line-height: 20px;
+  font-size: 16px;
+}
+
+.player-indicator.player-o {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: black !important; /* Force black for player o */
+  color: white !important; /* Force white pawn icon */
+  text-align: center;
+  line-height: 20px;
+  font-size: 16px;
+}

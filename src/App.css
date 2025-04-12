@@ -101,13 +101,12 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   z-index: 1000;
 }
 
 .back-button:hover {
   background: #2a2d33;
-  transform: translateY(-2px);
 }
 
 h1 {

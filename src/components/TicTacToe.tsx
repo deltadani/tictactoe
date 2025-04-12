@@ -178,6 +178,13 @@ const TicTacToe: React.FC = () => {
     setXIsNext(!xIsNext);
   };
 
+  const resetGame = () => {
+    setSquares(Array(9).fill(null));
+    setXIsNext(true);
+    setPreviousWinner(null);
+    setPreviousIsDraw(false);
+  };
+
   const status = winner
     ? `Winner: ${winner}`
     : isDraw
@@ -218,8 +225,9 @@ const TicTacToe: React.FC = () => {
           ))}
         </div>
       </div>
+      <button className="reset-button" aria-label="Reset" onClick={resetGame}>Reset</button>
     </div>
   );
 };
 
-export default TicTacToe; 
+export default TicTacToe;

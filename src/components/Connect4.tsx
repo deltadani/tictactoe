@@ -171,8 +171,9 @@ const Connect4: React.FC = () => {
           </div>
         ))}
       </div>
+      <button className="reset-button" aria-label="Reset" onClick={resetGame}>Reset</button>
     </div>
   );
 };
 
-export default Connect4; 
+export default Connect4;

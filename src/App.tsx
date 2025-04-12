@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import TicTacToe from './components/TicTacToe';
 import TicTacToe3D from './components/TicTacToe3D';
 import Connect4 from './components/Connect4';
+import Chess from './components/Chess';
 import './App.css';
 
-type GameType = '2d' | '3d' | 'connect4' | null;
+type GameType = '2d' | '3d' | 'connect4' | 'chess' | null;
 
 function App() {
   const [selectedGame, setSelectedGame] = useState<GameType>(null);
@@ -17,6 +18,8 @@ function App() {
         return <TicTacToe3D />;
       case 'connect4':
         return <Connect4 />;
+      case 'chess':
+        return <Chess />;
       default:
         return (
           <div className="game-selector">
@@ -30,6 +33,9 @@ function App() {
               </button>
               <button onClick={() => setSelectedGame('connect4')}>
                 Connect 4
+              </button>
+              <button onClick={() => setSelectedGame('chess')}>
+                Chess
               </button>
             </div>
           </div>

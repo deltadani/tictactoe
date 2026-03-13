@@ -25,6 +25,12 @@ const ChessGame: React.FC = () => {
     // Get the piece being moved
     const piece = game.get(sourceSquare);
 
+    // Ensure the move is made by the correct player
+    if ((isWhiteTurn && piece?.color !== 'w') || (!isWhiteTurn && piece?.color !== 'b')) {
+      setErrorMessage(`It's ${isWhiteTurn ? 'White' : 'Black'}'s turn!`);
+      return false; // Block the move if it's not the player's turn
+    }
+
     // Check if the move is valid for a pawn moving too many spaces
     if (piece?.type === 'p') {
       const dx = Math.abs(sourceSquare.charCodeAt(0) - targetSquare.charCodeAt(0));

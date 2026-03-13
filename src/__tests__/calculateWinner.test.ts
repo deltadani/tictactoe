@@ -1,4 +1,4 @@
-import { calculateWinner } from '../components/TicTacToe3D';
+import { calculateWinner } from '../utils/calculateWinner3D';
 
 describe('calculateWinner', () => {
   it('returns null when there is no winner', () => {
